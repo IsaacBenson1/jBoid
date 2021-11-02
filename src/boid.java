@@ -10,10 +10,6 @@ public class boid {
     double x;
     double y;
     double degree;
-    double rLineX;
-    double rLineY;
-    double lLineX;
-    double lLineY;
     int numLines = 15;
     double linesX[] = new double[numLines];
     double linesY[] = new double[numLines];
@@ -34,20 +30,30 @@ public class boid {
         setY(y+yOffSet);
         setX(x+xOffSet);
     }
+    public double alignment(boid[] boids, int myIndex){
+        return 0;
+
+    }
+
+    public double cohesion(boid[] boids, Point p, int myIndex){
+        boid[] nearBoids = getNearest(boids,90,myIndex);
+        return 0;
+    }
 
 
 
     public double separation(boid[] boids, cord[] cords, int myIndex) {
+        if (boids.length==0){
+            return 0;
+        }
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         double width = size.width;
         int height = size.height;
-        double awareness = 70;
-        int fov = 90;
+        double awareness = 45;
+        int fov = 45;
         double sep = fov / numLines;
         int pathsAvailable = 0;
         sightLine[] lines = new sightLine[numLines];
-
-
         for (int i = 0; i < numLines; i++) {
             double newDegree = degree + ((i * sep)) - (fov/2);
             sightLine prospect = new sightLine(newDegree, awareness, x, y);
@@ -87,6 +93,33 @@ public class boid {
 
 
     }
+    public boid[] getNearest (boid[] allBoids, double radius, int myIndex){
+        boid[] nearBoids;
+        int counter = 0;
+        for (int i = 0; i < allBoids.length; i++){
+            if (isInside(x,y,radius,allBoids[i].x,allBoids[i].y) && i!=myIndex){
+                counter++;
+            }
+        }
+        nearBoids = new boid[counter];
+        counter = 0;
+        for (int i = 0; i < allBoids.length; i++){
+            if (isInside(x,y,radius,allBoids[i].x,allBoids[i].y ) && i!=myIndex){
+                nearBoids[counter] = allBoids[i];
+                System.out.println(allBoids[i]);
+                counter++;
+            }
+        }
+        return nearBoids;
+
+    }
+
+    public static boolean isInside(double x, double y, double radius, double checkX, double checkY){
+        if ((checkX - x) * (checkX - x) + (checkY - y) * (checkY - y) <= radius * radius)
+            return true;
+        else
+            return false;
+    }
 
 
     public double weightedRandomDegree(sightLine[] lines, int pathsAvailable){
@@ -102,70 +135,24 @@ public class boid {
             sum += diffs[i];
         }
         double rand = random.nextDouble() * sum;
-        double result = 0;
+        int result = 0;
         for (int i = 0; i < pathsAvailable; i++){
-            if (rand>diffs[i]){
-                result = diffs[i];
+            double reverse = sum - diffs[i];
+            if (rand<reverse){
+                result = i;
             }
-            rand -= i;
+            rand -= diffs[i];
         }
-        return result;
+        double returner = diffs[result] + degree;
+        return returner;
     }
 
+    public void all3(boid[] boids, Point p, cord[] cords, int myIndex){
 
-    public double alignment(boid[] boids){
-        double sepFactor= 0.001;
-        double degAvg = 0;
-        for(int i = 0; i <boids.length; i++){
-            degAvg+=boids[i].degree;
-        }
-        degAvg /= boids.length;
-        degAvg %= 360;
-        return degAvg;
-
-
-    }
-
-    public double cohesion(boid[] boids, Point p){
-
-        double coFactor = 0.0001;
-        double sumX = 0;
-        double sumY = 0;
-        for(int i = 0; i <boids.length; i++){
-            sumX+=boids[i].x;
-            sumY+=boids[i].y;
-        }
-        sumX/=boids.length;
-        sumY/=boids.length;
-        double x = p.y - this.y;
-        double y = p.x - this.x;
-        double X = sumY -this.y;
-        double Y = sumX -this.x;
-        double followMouse = Math.atan2(x,y);
-        double newDeg = Math.atan2(X,Y);
-
-       // double diff = newDeg - this.degree;
-       // double diff = followMouse - this.degree;
-        return (newDeg);
-
-
-
-    }
-
-
-    public void all3(boid[] boids, Point p, cord[] cords,int myIndex){
-        double c = 0.0;
-        double a = 0.0;
-        double s = 3;
-        double cohesion = cohesion(boids, p);
-        double alignment = alignment(boids);
         double separation = separation(boids,cords,myIndex);
-        setDegree(((separation*s)+(alignment*a)+(cohesion*c))/3);
 
-
+        setDegree(separation);
     }
-
-
 
     public void setDegree(double degree){
         this.degree=degree;
@@ -177,4 +164,8 @@ public class boid {
         this.y = y;
     }
 
+    public String toString (){
+        double rad = degree*0.0174533;
+        return "[ "+x+" , "+y+" , "+degree+" ]";
+    }
 }

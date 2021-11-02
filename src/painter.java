@@ -25,7 +25,7 @@ public class painter extends JPanel implements ActionListener {
         for (int i = 0; i < allBoids.length; i++){
             fillTriangle(allBoids[i],g2d, false);
         }
-        //fillTriangle(myBoid,g2d);
+        fillTriangle(myBoid,g2d,false);
         t.start();
     }
 
