@@ -32,13 +32,29 @@ public class boid {
         setX(x+xOffSet);
     }
     public double alignment(boid[] boids, int myIndex){
-        return 0;
+        double sum=0;
+        for(int i =0; i<boids.length; i++){
+            sum+=boids[i].degree;
+        }
+        sum/=boids.length;
+        return sum;
 
     }
 
     public double cohesion(boid[] boids, Point p, int myIndex){
-        boid[] nearBoids = getNearest(boids,90,myIndex);
-        return 0;
+        double avgX = 0;
+        double avgY = 0;
+        for (int i = 0; i < boids.length; i++){
+            avgX+=boids[i].x;
+            avgY+=boids[i].y;
+        }
+        avgX/=boids.length;
+        avgY/=boids.length;
+        //System.out.println(avgX+" | "+avgY);
+
+        double returner = Math.atan2(avgY-y,avgX-x);
+       // System.out.println(returner);
+        return returner;
     }
 
 
@@ -50,7 +66,7 @@ public class boid {
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         double width = size.width;
         int height = size.height;
-        double awareness = 45;
+        double awareness = 90;
         int fov = 45;
         double sep = fov / numLines;
         int pathsAvailable = 0;
@@ -131,22 +147,22 @@ public class boid {
             diffs[i] = Math.abs(degree-lines[i].degree);
         }
         Arrays.sort(diffs);
-        Random r = new Random();
-        double d = r.nextDouble();
-        d*=d;
-        d*=pathsAvailable;
-        int index = (int)Math.floor(d);
-        System.out.println(pathsAvailable+" "+d);
-
+        return degree-diffs[0];
 
 
 
     }
 
     public void all3(boid[] boids, Point p, cord[] cords, int myIndex){
-
+        double a = 0.00;
+        double c = 3.00;
+        double s = 0;
+        double alignment = alignment(boids, myIndex);
+        double cohesion = cohesion(boids, p, myIndex);
         double separation = separation(boids,cords,myIndex);
-
+        double average = ( ( (a*alignment)+
+                             (c*cohesion)+
+                             (s*separation)/3));
         setDegree(separation);
     }
 
