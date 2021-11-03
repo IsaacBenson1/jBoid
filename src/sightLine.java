@@ -1,9 +1,11 @@
+import java.awt.*;
 public class sightLine {
     double degree;
     double awareness;
     cord[] cords;
     double x;
     double y;
+    Color color;
 
     public sightLine(double degree, double awareness, double x, double y){
         this.degree = degree;
@@ -12,6 +14,7 @@ public class sightLine {
         this.y = y;
         cords = new cord[(int)awareness];
         makeLine();
+        color = Color.black;
     }
 
     public double getY() {

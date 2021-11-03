@@ -23,7 +23,7 @@ public class painter extends JPanel implements ActionListener {
         Graphics2D g2d = (Graphics2D) g;
         this.setBackground(Color.gray);
         for (int i = 0; i < allBoids.length; i++){
-            fillTriangle(allBoids[i],g2d, false);
+            fillTriangle(allBoids[i],g2d, true);
         }
         fillTriangle(myBoid,g2d,false);
         t.start();

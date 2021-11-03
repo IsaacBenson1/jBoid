@@ -13,6 +13,7 @@ public class boid {
     int numLines = 15;
     double linesX[] = new double[numLines];
     double linesY[] = new double[numLines];
+    sightLine allLines[];
 
     public boid (Color color, double x, double y, double degree){
         this.color = color;
@@ -54,21 +55,23 @@ public class boid {
         double sep = fov / numLines;
         int pathsAvailable = 0;
         sightLine[] lines = new sightLine[numLines];
+        allLines = new sightLine[numLines];
         for (int i = 0; i < numLines; i++) {
             double newDegree = degree + ((i * sep)) - (fov/2);
             sightLine prospect = new sightLine(newDegree, awareness, x, y);
+            allLines[i]=prospect;
             linesX[i] = prospect.cords[(int) awareness - 1].x;
             linesY[i] = prospect.cords[(int) awareness - 1].y;
-            boolean collisionCheck1 = (prospect.cords[(int) awareness -1].y < height && prospect.cords[(int)awareness-1].x < width );
-            boolean collisionCheck2 = (prospect.cords[(int) awareness -1].y > 0 && prospect.cords[(int)awareness-1].x > 0 );
+            boolean collisionCheck1 = (prospect.cords[(int) awareness -1].y < height && prospect.cords[(int)awareness-1].y > 0 );
+            boolean collisionCheck2 = (prospect.cords[(int) awareness -1].x < width && prospect.cords[(int)awareness-1].x > 0 );
             boolean canPass1 = collisionCheck1 && collisionCheck2;
             boolean canPass2 = true;
 
             for (int j = 0; j < cords.length; j++) {
-                boolean collisionCheck3 = (cords[j].x < prospect.cords[(int) awareness - 1].x) && (cords[j].x > this.x);
-                boolean collisionCheck4 = (cords[j].y < prospect.cords[(int) awareness - 1].y) && (cords[j].y > this.y);
-                boolean collisionCheck5 = (cords[j].x > prospect.cords[(int) awareness - 1].x) && (cords[j].x < this.x);
-                boolean collisionCheck6 = (cords[j].y > prospect.cords[(int) awareness - 1].y) && (cords[j].y < this.y);
+                boolean collisionCheck3 = (cords[j].x < prospect.cords[(int) awareness - 1].x) && (cords[j].x > this.x); // in sight left X
+                boolean collisionCheck4 = (cords[j].y < prospect.cords[(int) awareness - 1].y) && (cords[j].y > this.y); // in sight left Y
+                boolean collisionCheck5 = (cords[j].x > prospect.cords[(int) awareness - 1].x) && (cords[j].x < this.x); // in sight right X
+                boolean collisionCheck6 = (cords[j].y > prospect.cords[(int) awareness - 1].y) && (cords[j].y < this.y); // in sight right Y
                 if (collisionCheck3 && collisionCheck4) {
                     canPass2 = false;
                 }
@@ -88,6 +91,7 @@ public class boid {
                 return degree;
             } else {
                 double newDeg = weightedRandomDegree(lines, pathsAvailable);
+
                 return newDeg;
             }
 
@@ -106,7 +110,6 @@ public class boid {
         for (int i = 0; i < allBoids.length; i++){
             if (isInside(x,y,radius,allBoids[i].x,allBoids[i].y ) && i!=myIndex){
                 nearBoids[counter] = allBoids[i];
-                System.out.println(allBoids[i]);
                 counter++;
             }
         }
@@ -123,28 +126,21 @@ public class boid {
 
 
     public double weightedRandomDegree(sightLine[] lines, int pathsAvailable){
-        double[] diffs = new double [pathsAvailable];
-        for (int i = 0; i < pathsAvailable; i++) {
-            int diff = Math.abs((int) lines[i].degree - (int) degree);
-            diffs[i] = diff;
+        double[] diffs = new double[pathsAvailable];
+        for(int i = 0; i < pathsAvailable; i++){
+            diffs[i] = Math.abs(degree-lines[i].degree);
         }
         Arrays.sort(diffs);
-        Random random = new Random();
-        double sum = 0;
-        for (int i = 0; i <pathsAvailable; i++){
-            sum += diffs[i];
-        }
-        double rand = random.nextDouble() * sum;
-        int result = 0;
-        for (int i = 0; i < pathsAvailable; i++){
-            double reverse = sum - diffs[i];
-            if (rand<reverse){
-                result = i;
-            }
-            rand -= diffs[i];
-        }
-        double returner = diffs[result] + degree;
-        return returner;
+        Random r = new Random();
+        double d = r.nextDouble();
+        d*=d;
+        d*=pathsAvailable;
+        int index = (int)Math.floor(d);
+        System.out.println(pathsAvailable+" "+d);
+
+
+
+
     }
 
     public void all3(boid[] boids, Point p, cord[] cords, int myIndex){
