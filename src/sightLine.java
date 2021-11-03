@@ -5,6 +5,8 @@ public class sightLine {
     cord[] cords;
     double x;
     double y;
+    double xEnd;
+    double yEnd;
     Color color;
 
     public sightLine(double degree, double awareness, double x, double y){
@@ -55,8 +57,10 @@ public class sightLine {
     }
 
     public void makeLine(){
+        double radian = degree * 0.0174533;
+        double xEnd = Math.sin(radian*awareness);
+        double yEnd = Math.cos(radian*awareness);
         for (int i  = 0; i < awareness; i ++){
-            double radian = degree * 0.0174533; // converts degrees to radians
             double yCord = y + (Math.sin(radian)*i);
             double xCord = x + (Math.cos(radian)*i);
             cords[i] = new cord (xCord,yCord);

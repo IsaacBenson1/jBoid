@@ -37,6 +37,7 @@ public class boid {
             sum+=boids[i].degree;
         }
         sum/=boids.length;
+        sum %=360;
         return sum;
 
     }
@@ -50,10 +51,8 @@ public class boid {
         }
         avgX/=boids.length;
         avgY/=boids.length;
-        //System.out.println(avgX+" | "+avgY);
-
         double returner = Math.atan2(avgY-y,avgX-x);
-       // System.out.println(returner);
+        returner*=1/0.0174533;
         return returner;
     }
 
@@ -67,7 +66,7 @@ public class boid {
         double width = size.width;
         int height = size.height;
         double awareness = 90;
-        int fov = 45;
+        int fov = 70;
         double sep = fov / numLines;
         int pathsAvailable = 0;
         sightLine[] lines = new sightLine[numLines];
@@ -102,7 +101,14 @@ public class boid {
             }
         }
             if (pathsAvailable == 0) {
-                return degree;
+                int evenOrOdd = random.nextInt(100);
+                double returner;
+                if(evenOrOdd%2==0){
+                    returner = allLines[0].degree;
+                } else {
+                    returner = allLines[numLines-1].degree;
+                }
+                return returner;
             } else if (pathsAvailable == numLines) {
                 return degree;
             } else {
@@ -154,16 +160,23 @@ public class boid {
     }
 
     public void all3(boid[] boids, Point p, cord[] cords, int myIndex){
-        double a = 0.00;
-        double c = 3.00;
-        double s = 0;
-        double alignment = alignment(boids, myIndex);
-        double cohesion = cohesion(boids, p, myIndex);
+        boid[] nearBoids = getNearest(boids,600,myIndex);
+        double a = 0.0003;
+        double c = 0.2;
+        double s = 3.0;
+        double alignment = 0;
+        double cohesion = 0;
+        if (nearBoids!=null){
+            alignment = degree + alignment(nearBoids, myIndex);
+            cohesion = cohesion(nearBoids, p, myIndex);
+
+        }
         double separation = separation(boids,cords,myIndex);
+
         double average = ( ( (a*alignment)+
                              (c*cohesion)+
-                             (s*separation)/3));
-        setDegree(separation);
+                             (s*separation))/3);
+        setDegree(average);
     }
 
     public void setDegree(double degree){

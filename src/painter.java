@@ -10,7 +10,7 @@ public class painter extends JPanel implements ActionListener {
     private Timer t = new Timer(1,this);
     Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
     boid myBoid = new boid(Color.black, size.width/2, size.height/2, 0);
-    boid [] allBoids = new boid[100];
+    boid [] allBoids = new boid[250];
     Color [] colors = {Color.black,Color.white,Color.blue,Color.cyan,Color.orange,Color.red,Color.green,Color.yellow,Color.magenta};
     Color [] colors2 = {Color.black,Color.red};
 
@@ -48,8 +48,9 @@ public class painter extends JPanel implements ActionListener {
         myBoid.move(2);
         double y = size.getHeight()/2 - myBoid.y;
         double x = size.getWidth()/2 - myBoid.x;
-        double degree = Math.atan2(x,y);
-        myBoid.setDegree(2);
+       // System.out.println("x:"+size.getWidth()/2+"y:"+size.getHeight()/2);
+        double degree = Math.atan2(y,x);
+        myBoid.setDegree(degree);
         repaint();
     }
     public cord[] getCords(boid[] boids){
