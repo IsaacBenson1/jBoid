@@ -18,12 +18,11 @@ public class painter extends JPanel implements ActionListener {
     // TODO
     // random colors, random positions
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         this.setBackground(Color.gray);
         for (int i = 0; i < allBoids.length; i++){
-            fillTriangle(allBoids[i],g2d, true);
+            fillTriangle(allBoids[i],g2d, false);
         }
         fillTriangle(myBoid,g2d,false);
         t.start();
@@ -43,13 +42,14 @@ public class painter extends JPanel implements ActionListener {
         Point p = MouseInfo.getPointerInfo().getLocation();
         cord[] cords = getCords(allBoids);
         for (int i = 0; i < allBoids.length; i++){
-            allBoids[i].move(0.5);
+            allBoids[i].move(0.7);
             allBoids[i].all3(allBoids,p,cords,i);
         }
-        myBoid.move(0.2);
-        double y = p.y - myBoid.y;
-        double x = p.x - myBoid.x;
-        myBoid.setDegree(Math.atan2(y,x));
+        myBoid.move(2);
+        double y = size.getHeight()/2 - myBoid.y;
+        double x = size.getWidth()/2 - myBoid.x;
+        double degree = Math.atan2(x,y);
+        myBoid.setDegree(2);
         repaint();
     }
     public cord[] getCords(boid[] boids){
@@ -81,10 +81,6 @@ public class painter extends JPanel implements ActionListener {
                 g2d.drawLine((int) boid.x, (int) boid.y, (int) boid.linesX[i], (int) boid.linesY[i]);
             }
         }
-
-
-
-
     }
 
 
